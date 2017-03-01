@@ -11,5 +11,5 @@ Description
 Framework for generating pseudo-random IDs.
 
 Basic idea of this library is to use simple monotonically increasing sequence,
-and turn it into seemingly random ID. This is done by a composition of multiple
-invertible functions, which as a whole is also invertible.
+and turn it into sequence of seemingly random IDs. This is done by composing
+multiple invertible functions, which as a whole is also invertible.
