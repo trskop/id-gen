@@ -1,0 +1,40 @@
+name:                   id-gen
+version:                0.1.0.0
+synopsis:               Generate pseudo-random IDs.
+description:            Framework for generating pseudo-random IDs.
+homepage:               https://github.com/trskop/id-gen
+license:                BSD3
+license-file:           LICENSE
+author:                 Peter Trško
+maintainer:             peter.trsko@gmail.com
+copyright:              (c) 2016-2017, Peter Trško
+category:               Data
+build-type:             Simple
+cabal-version:          >=1.10
+
+extra-source-files:     ChangeLog.md, README.md
+
+library
+  hs-source-dirs:       src
+  exposed-modules:
+      Data.Id
+    , Data.Id.Base16
+    , Data.Id.Gen
+    , Data.Id.Type
+    , Data.Id.Utils
+  -- other-modules:
+
+  default-language:     Haskell2010
+  other-extensions:     NoImplicitPrelude
+
+  build-depends:
+      base >=4.8 && <5
+
+    , base16-bytestring ==0.1.*
+    , binary >=0.8.3 && <0.9
+    -- ^ Starting version 0.8.3 binary reuses Builder from bytestring package.
+    , bytestring <1
+    , largeword ==1.*
+    , data-default-extra >=0.1 && <1
+
+  ghc-options:          -Wall
