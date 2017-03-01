@@ -1,7 +1,13 @@
 name:                   id-gen
 version:                0.1.0.0
 synopsis:               Generate pseudo-random IDs.
-description:            Framework for generating pseudo-random IDs.
+description:
+  Framework for generating pseudo-random IDs.
+  .
+  Basic idea of this library is to use simple monotonically increasing
+  sequence, and turn it into seemingly random ID. This is done by a composition
+  of multiple invertible functions, which as a whole is also invertible.
+
 homepage:               https://github.com/trskop/id-gen
 license:                BSD3
 license-file:           LICENSE
