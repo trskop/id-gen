@@ -21,6 +21,11 @@ cabal-version:          >=1.10
 
 extra-source-files:     ChangeLog.md, README.md
 
+flag pedantic
+  description:          Pass additional warning flags to GHC during compilation.
+  default:              False
+  manual:               True
+
 library
   hs-source-dirs:       src
   exposed-modules:
@@ -45,3 +50,9 @@ library
     , data-default-extra >=0.1 && <1
 
   ghc-options:          -Wall
+
+  if flag(pedantic)
+    ghc-options:
+      -fwarn-implicit-prelude
+      -fwarn-missing-import-lists
+      -Werror
