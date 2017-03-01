@@ -9,6 +9,7 @@ description:
   of multiple invertible functions, which as a whole is also invertible.
 
 homepage:               https://github.com/trskop/id-gen
+bug-reports:            https://github.com/trskop/id-gen/issues
 license:                BSD3
 license-file:           LICENSE
 author:                 Peter Trško
