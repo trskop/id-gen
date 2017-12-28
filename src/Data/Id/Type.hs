@@ -3,6 +3,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
 #ifdef HAVE_TYPE_IN_TYPE
 {-# LANGUAGE TypeInType #-}
@@ -31,6 +32,7 @@ import Data.Bool (not, otherwise)
 import Data.Coerce (Coercible, coerce)
 import Data.Eq (Eq, (==))
 import Data.Function (($), (.))
+import Data.Functor ((<$>))
 import qualified Data.List as List (null)
 import Data.Maybe (Maybe(Just, Nothing))
 import Data.Ord (Ord, (>))
@@ -87,9 +89,30 @@ class
     default bitSize :: FiniteBits (IdNum a) => a -> Word16
     bitSize i = withIdAsNum i $ fromIntegral . finiteBitSize
 
+    idToNum :: a -> IdNum a
+    default idToNum :: Coercible a (IdNum a) => a -> IdNum a
+    idToNum = coerce
+
     withIdAsNum :: a -> (IdNum a -> r) -> r
     default withIdAsNum :: Coercible a (IdNum a) => a -> (IdNum a -> r) -> r
     withIdAsNum i f = coerce f i
+
+    -- | Generate ID from an ID 'Offset', new 'Offset' is returned.
+    genNextIdWith
+        :: (IdOffsetNum (Offset a) -> IdNum a)
+        -- ^ Function that generates ID value from current 'Offset'.
+        -> Offset a
+        -> Maybe (a, Offset a)
+        -- ^ On success it returns generated ID and new 'Offset'. 'Nothing' is
+        -- returned if ID space is exhausted, i.e. when @'Offset' a@ reached it's
+        -- max bound.
+    default genNextIdWith
+        :: Coercible a (IdNum a)
+        => (IdOffsetNum (Offset a) -> IdNum a)
+        -> Offset a
+        -> Maybe (a, Offset a)
+    genNextIdWith f offset =
+        (coerce (withIdOffsetAsNum offset f),) <$> next offset
 
 genericShowsTaggedId
     ::  ( Typeable t
@@ -220,10 +243,17 @@ class (Bounded a, Default a, Eq a, Ord a, Typeable a) => IdOffset a where
       | offset == maxBound = Nothing
       | otherwise          = Just (coerce (withIdOffsetAsNum offset succ))
 
+    idOffsetToNum :: a -> IdOffsetNum a
+    default idOffsetToNum :: Coercible a (IdOffsetNum a) => a -> IdOffsetNum a
+    idOffsetToNum = coerce
+
     withIdOffsetAsNum :: a -> (IdOffsetNum a -> r) -> r
     default withIdOffsetAsNum
-        :: Coercible a (IdOffsetNum a) => a -> (IdOffsetNum a -> r)-> r
-    withIdOffsetAsNum i f = f (coerce i)
+        :: Coercible a (IdOffsetNum a)
+        => a
+        -> (IdOffsetNum a -> r)
+        -> r
+    withIdOffsetAsNum i f = coerce f i
 
 -- }}} IdOffset ---------------------------------------------------------------
 

@@ -1,9 +1,18 @@
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FunctionalDependencies #-}
--- | Generate 'Id32', 'Id64' and 'Id128' values.
+-- |
+-- Module:      Data.Id.Gen
+-- Description: Generate Id32, Id64, and Id128 values.
+-- Copyright:   (c) 2017 Peter Trško
+-- License:     BSD3
+--
+-- Maintainer:  peter.trsko@gmail.com
+-- Stability:   experimental
+-- Portability: GHC specific language extensions.
+--
+-- Generate 'Id32', 'Id64', and 'Id128' values.
 module Data.Id.Gen
     (
     -- | We want to minimize the amount of information that has to be stored,
@@ -11,7 +20,6 @@ module Data.Id.Gen
 
     -- * GenId
       GenId(..)
-    , genNextId
 
     -- * Quadratic Residue
     --
@@ -43,8 +51,7 @@ import Data.Bits (FiniteBits, (.|.), bit, finiteBitSize, xor)
 import qualified Data.Bits as Bits (rotate)
 import Data.Bool (otherwise)
 import Data.Foldable (foldr)
-import Data.Function (($), (.), on)
-import Data.Functor ((<$>))
+import Data.Function ((.), on)
 import Data.Maybe (Maybe)
 import Data.Ord (Ord((<=), (>=)))
 import Data.Proxy (Proxy(Proxy))
@@ -52,7 +59,7 @@ import Data.Word (Word32, Word64)
 
 import Data.LargeWord (Word128, Word160, Word96)
 
-import Data.Id.Type (AnId(Offset), IdOffset(next))
+import Data.Id.Type (AnId)
 
 
 -- {{{ GenId ------------------------------------------------------------------
@@ -67,9 +74,6 @@ class AnId a => GenId r a | r -> a where
     -- place.
     genId :: r -> Maybe (a, r)
 
--- | Generate ID by using from least unused 'Offset'.
-genNextId :: AnId a => (Offset a -> a) -> Offset a -> Maybe (a, Offset a)
-genNextId f offset = (f offset,) <$> next offset
 
 -- }}} GenId ------------------------------------------------------------------
 
@@ -126,8 +130,10 @@ quadraticResidue p n
 
 -- | Intermediate values used internally by 'quadraticResidue' may not fit in
 -- to the type we want as a result.
+--
+-- __HELPER FUNCTION, DO NOT EXPORT__
 convert :: (Integral a, Integral b) => proxy b -> (b -> b -> b) -> a -> a -> a
-convert _ f x y = fromIntegral $ (f `on` fromIntegral) x y
+convert _ f x = fromIntegral . (f `on` fromIntegral) x
 {-# INLINE convert #-}
 
 -- | Quadratic residue for 32b unsigned integers that uses 'largestPrime32bit'.
