@@ -14,17 +14,18 @@
 *.rar
 *.zip
 *.gz
+*.tgz
 *.bzip
 *.bz2
 *.xz
 *.lzma
 *.cab
 
-#packing-only formats
+# Packing-only formats
 *.iso
 *.tar
 
-#package management formats
+# Package management formats
 *.dmg
 *.xpi
 *.gem
@@ -100,18 +101,49 @@ flycheck_*.el
 .nfs*
 # }}} Global/Linux.gitignore ##################################################
 
+# {{{ Global/macOS.gitignore ##################################################
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+# }}} Global/macOS.gitignore ##################################################
+
 # {{{ Global/Vim.gitignore ####################################################
-# swap
+# Swap
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
 [._]s[a-v][a-z]
 [._]sw[a-p]
-# session
+
+# Session
 Session.vim
-# temporary
+
+# Temporary
 .netrwhist
 *~
-# auto-generated tag files
+# Auto-generated tag files
 tags
 # }}} Global/Vim.gitignore ####################################################
 
@@ -121,8 +153,11 @@ Thumbs.db
 ehthumbs.db
 ehthumbs_vista.db
 
+# Dump file
+*.stackdump
+
 # Folder config file
-Desktop.ini
+[Dd]esktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
@@ -157,5 +192,14 @@ cabal.sandbox.config
 *.eventlog
 .stack-work/
 cabal.project.local
+cabal.project.local~
 .HTF/
+.ghc.environment.*
 # }}} Haskell.gitignore #######################################################
+
+# {{{ Local ###################################################################
+
+# This package uses https://github.com/sol/hpack instead.
+id-gen.cabal
+
+# }}} Local ###################################################################

@@ -1,0 +1,49 @@
+name:         id-gen
+version:      0.1.0.0
+synopsis:     Generate pseudo-random IDs.
+description:  >
+  Framework for generating pseudo-random IDs.
+
+  Basic idea of this library is to use simple monotonically increasing
+  sequence, and turn it into sequence of seemingly random IDs. This is done by
+  composing multiple invertible functions, which as a whole is also invertible.
+github:       trskop/id-gen
+license:      BSD3
+license-file: LICENSE
+author:       Peter Trško
+maintainer:   peter.trsko@gmail.com
+copyright:    (c) 2016-2017, Peter Trško
+category:     Data
+
+extra-source-files:
+  - ChangeLog.md
+  - README.md
+
+dependencies:
+  - base >=4.8 && <5
+
+  - base16-bytestring ==0.1.*
+  - binary >=0.8.3 && <0.9
+    # ^ Starting version 0.8.3 binary reuses Builder from bytestring package.
+  - bytestring <1
+  - largeword ==1.*
+  - data-default-extra >=0.1 && <1
+
+ghc-options:
+  - -Wall
+
+flags:
+  pedantic:
+    description: Pass additional warning flags to GHC during compilation.
+    default: False
+    manual: True
+
+when:
+  - condition: flag(pedantic)
+    ghc-options:
+      - -fwarn-implicit-prelude
+      - -fwarn-missing-import-lists
+      - -Werror
+
+library:
+  source-dirs: [src]
