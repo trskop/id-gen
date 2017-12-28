@@ -1,8 +1,12 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TypeFamilies #-}
+#ifdef HAVE_TYPE_IN_TYPE
+{-# LANGUAGE TypeInType #-}
+#endif
 module Data.Id.Type
     ( AnId(..)
     , Id32(..)
@@ -49,6 +53,10 @@ import Text.Show
     , showString
     )
 
+#ifdef HAVE_TYPE_IN_TYPE
+import Data.Kind (type (*))
+#endif
+
 import Data.Default (Default(def))
 import Data.LargeWord (Word128)
 
@@ -68,7 +76,12 @@ class
   where
     type IdNum a :: *
     type Offset a :: *
+
+#ifdef HAVE_TYPE_IN_TYPE
+    type IdTag a :: k
+#else
     type IdTag a :: *
+#endif
 
     bitSize :: a -> Word16
     default bitSize :: FiniteBits (IdNum a) => a -> Word16
@@ -111,26 +124,80 @@ newtype Id64 t = Id64 Word64
 newtype Id128 t = Id128 Word128
   deriving (Bounded, Eq, Ord, Typeable)
 
-instance Typeable t => Show (Id32 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => Show (Id32 t)
+  where
     showsPrec d = showParen (d > 10) . genericShowsTaggedId
 
-instance Typeable t => Show (Id64 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => Show (Id64 t)
+  where
     showsPrec d = showParen (d > 10) . genericShowsTaggedId
 
-instance Typeable t => Show (Id128 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => Show (Id128 t)
+  where
     showsPrec d = showParen (d > 10) . genericShowsTaggedId
 
-instance Typeable t => AnId (Id32 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => AnId (Id32 t)
+  where
     type IdNum (Id32 t) = Word32
     type Offset (Id32 t) = IdOffset32 t
     type IdTag (Id32 t) = t
 
-instance Typeable t => AnId (Id64 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => AnId (Id64 t)
+  where
     type IdNum (Id64 t) = Word64
     type Offset (Id64 t) = IdOffset64 t
     type IdTag (Id64 t) = t
 
-instance Typeable t => AnId (Id128 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => AnId (Id128 t)
+  where
     type IdNum (Id128 t) = Word128
     type Offset (Id128 t) = IdOffset128 t
     type IdTag (Id128 t) = t
@@ -180,13 +247,40 @@ instance Default (IdOffset64 t) where
 instance Default (IdOffset128 t) where
     def = IdOffset128 0
 
-instance Typeable t => IdOffset (IdOffset32 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => IdOffset (IdOffset32 t)
+  where
     type IdOffsetNum (IdOffset32 t) = Word32
 
-instance Typeable t => IdOffset (IdOffset64 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => IdOffset (IdOffset64 t)
+  where
     type IdOffsetNum (IdOffset64 t) = Word64
 
-instance Typeable t => IdOffset (IdOffset128 t) where
+instance
+#ifdef HAVE_TYPE_IN_TYPE
+    ( Typeable k
+    , Typeable (t :: k)
+#else
+    ( Typeable t
+#endif
+    )
+    => IdOffset (IdOffset128 t)
+  where
     type IdOffsetNum (IdOffset128 t) = Word128
 
 -- }}} Offset{32,64,128} ------------------------------------------------------

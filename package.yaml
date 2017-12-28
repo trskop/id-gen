@@ -44,6 +44,9 @@ when:
       - -fwarn-implicit-prelude
       - -fwarn-missing-import-lists
       - -Werror
+  - condition: impl(GHC >=8)
+    cpp-options:
+      - -DHAVE_TYPE_IN_TYPE
 
 library:
   source-dirs: [src]
