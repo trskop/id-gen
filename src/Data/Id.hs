@@ -12,9 +12,6 @@ module Data.Id
     , IdOffset32
     , IdOffset64
     , IdOffset128
-
-    -- * Generate
-    , GenId(genId)
     )
   where
 
@@ -28,5 +25,3 @@ import Data.Id.Type
     , IdOffset64
     , IdOffset128
     )
-
-import Data.Id.Gen (GenId(genId))
