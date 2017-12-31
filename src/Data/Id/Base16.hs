@@ -64,7 +64,7 @@ instance Typeable t => IdFromBase16 (Id32 t) where
       | not (ByteString.null rest')  = (Nothing, bs)
       | otherwise = case ByteString.unpack input' of
             -- We now know that input' is exactly 4 octets long, since input is
-            -- exactly 8 hexadecimal digits long. However, this only works only
+            -- exactly 8 hexadecimal digits long. However, this only works
             -- when the input was fully decoded, which is the reason why we are
             -- checking for empty rest'.
             [o1, o2, o3, o4] ->
