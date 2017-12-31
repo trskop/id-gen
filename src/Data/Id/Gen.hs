@@ -23,7 +23,7 @@ module Data.Id.Gen
 
     -- * Quadratic Residue
     --
-    -- $quadraticResidue
+    -- $quadraticResidueTheory
 
     -- ** Quadratic Residue for Word32
     , largestPrime32bit
@@ -36,6 +36,9 @@ module Data.Id.Gen
     -- ** Quadratic Residue for Word128
     , largestPrime128bit
     , quadraticResidue128bit
+
+    -- ** Generic Algorithm (Unsafe)
+    , quadraticResidue
 
     -- * Bit Operations
     --
@@ -116,8 +119,23 @@ largestPrime128bit :: Word128
 largestPrime128bit = 340282366920938463463374607431768211283
 
 -- | Generic implementation for quadratic residues, but it works correctly only
--- for non-negative integers. This function doesn't check if the input is
--- non-negative.
+-- for non-negative integers.
+--
+-- __WARNING__:
+--
+-- * This function doesn't check if the input is non-negative.
+-- * Some intermediate values overflow the original integer size. Values have
+--   to be upcasted before passing them to 'quadraticResidue', and downcasted
+--   afterwards. For example:
+--
+-- @
+-- quadraticResidue32bit :: 'Word32' -> 'Word32'
+-- quadraticResidue32bit =
+--     'fromIntegral' . (quadraticResidue' ``on`` 'fromIntegral') 'largestPrime32bit'
+--   where
+--     quadraticResidue' :: 'Word64' -> 'Word64' -> 'Word64'
+--     quadraticResidue' = 'quadraticResidue'
+-- @
 quadraticResidue :: Integral i => i -> i -> i
 quadraticResidue p n
   | n >= p    = n   -- Out of range.
@@ -161,7 +179,7 @@ quadraticResidue128bit =
     -- which doesn't fit in to 128 bits, but it does in to 160 bits.
 {-# INLINE quadraticResidue128bit #-}
 
--- $quadraticResidue
+-- $quadraticResidueTheory
 --
 -- Quadratic residue @q@ is obtained using:
 --
