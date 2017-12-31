@@ -15,10 +15,17 @@
 -- Generate 'Id32', 'Id64', and 'Id128' values.
 module Data.Id.Gen
     (
-    -- | We want to minimize the amount of information that has to be stored,
-    -- but we also want to somewhat randomize the values of IDs.
+    -- | Generate randomly looking ID values from monotonically increasing
+    -- value of its 'Data.Id.Type.Offset'.
+    --
+    -- @'Data.Id.Type.Offset' a :: *@ behaves in a similar way as a state of
+    -- random number generator, but instead of using hash function we use
+    -- invertible functions to preserve 1:1 mapping between
+    -- @'Data.Id.Type.Offset' a@ and @a@ values.
 
     -- * GenId
+    --
+    -- $genId
       GenId(..)
 
     -- * Quadratic Residue
@@ -67,16 +74,38 @@ import Data.Id.Type (AnId)
 
 -- {{{ GenId ------------------------------------------------------------------
 
--- | Class that describes how IDs in an ID space 'Id' are generated.
+-- | Class that describes how IDs in an ID space @a :: *@ are generated. Value
+-- @r :: *@ represents state ('Data.Id.Type.Offset'), and it also implies
+-- specific algorithm for generating IDs.
 class AnId a => GenId r a | r -> a where
-    -- | Generate another non-repeating ID from ID space. Value @r :: *@ is
-    -- modified to ensure that the IDs do not repeate.
+    -- | Generate another non-repeating ID from an ID space. Value @r :: *@ is
+    -- modified to ensure that the IDs do not repeat.
     --
     -- ID space can be limited, and 'Nothing' is returned when the space is
     -- exhausted. This is especially required if some kind of sharding is in
     -- place.
     genId :: r -> Maybe (a, r)
 
+-- $genId
+--
+-- Usage example:
+--
+-- @
+-- newtype MyIdGen t = MyIdGen ('Data.Id.Type.IdOffset64' t)
+--
+-- instance
+--     ( 'Data.Typeable.Typeable' t
+--     , 'Data.Id.Type.Offset' ('Data.Id.Type.Id64' t) ~ 'Data.Id.Type.IdOffset64' t
+--     )
+--     => 'GenId' (MyIdGen t) ('Data.Id.Type.Id64' t)
+--   where
+--     'genId' (MyIdGen offset) =
+--        'Data.Bifunctor.second' MyIdGen
+--            <$> 'Data.Id.Type.genNextIdWith' gen offset
+--      where
+--        gen :: 'Data.Id.Type.IdOffset64' t -> 'Data.Id.Type.Id64' t
+--        gen = ...
+-- @
 
 -- }}} GenId ------------------------------------------------------------------
 
@@ -187,9 +216,9 @@ quadraticResidue128bit =
 -- x² ≡ q (mod p)
 -- @
 --
--- There are @(p + 1)/2@ residues (including 0) and @(p − 1)/2@ nonresidues. In
+-- There are @(p + 1)\/2@ residues (including 0) and @(p − 1)\/2@ nonresidues. In
 -- this case, it is customary to consider 0 as a special case and work within
--- the multiplicative group of nonzero elements of the field Z/pZ. (In other
+-- the multiplicative group of nonzero elements of the field Z\/pZ. (In other
 -- words, every congruence class except zero modulo p has a multiplicative
 -- inverse. This is not true for composite moduli.)
 --
@@ -200,13 +229,13 @@ quadraticResidue128bit =
 -- as follows.
 --
 -- Quadratic residue @q@ is q = n² `mod` p, and it is unique as long as
--- @2n < p+1 = n < ((p+1) / 2) = n <= (p / 2)@. Numbers that can not be
+-- @2n < p+1 = n < ((p+1) \/ 2) = n <= (p \/ 2)@. Numbers that can not be
 -- uniquely mapped are called nonresidues, and there is as many residues as
--- there is nonresidues (when excluding 0). If @p = 3 `mod` 4@, the negative of
--- a residue modulo @p@ is a nonresidue and the negative of a nonresidue is a
--- residue. In other words if @n > (p / 2)@ then @p - (n² `mod` p)@
+-- there is nonresidues (when excluding 0). If @p = 3 \`mod\` 4@, the negative
+-- of a residue modulo @p@ is a nonresidue and the negative of a nonresidue is
+-- a residue. In other words if @n > (p \/ 2)@ then @p - (n² \`mod\` p)@
 -- uniquely gives us the nonresidues. This way we have a bijection for numbers
--- @[1, p)@ instead of just @[1, p/2]@. To expand this to 128 bit values, we
+-- @[1, p)@ instead of just @[1, p\/2]@. To expand this to 128 bit values, we
 -- map the remaining values to them selves.
 --
 -- Sources:

@@ -114,6 +114,12 @@ class
     genNextIdWith f offset =
         (coerce (withIdOffsetAsNum offset f),) <$> next offset
 
+-- | Show ID type using @TypeApplications@ notation. Useful for implementing
+-- 'Show' instances.
+--
+-- >>> :set -XTypeApplications -XDataKinds
+-- >>> genericShowsTaggedId (Id32 @"TheAnswer" 42) ""
+-- "Id32 @\"TheAnswer\" 42"
 genericShowsTaggedId
     ::  ( Typeable t
         , AnId (a t)
@@ -123,13 +129,13 @@ genericShowsTaggedId
     -> ShowS
 genericShowsTaggedId i =
     showsType . showString " @" . showsTag . showChar ' ' . withIdAsNum i shows
-      where
-        showsType = showString . tyConName . typeRepTyCon $ typeOf i
+  where
+    showsType = showString . tyConName . typeRepTyCon $ typeOf i
 
-        showsTag =
-            showParen (not . List.null $ typeRepArgs rep) $ showsTypeRep rep
-          where
-            rep = typeRep i
+    showsTag =
+        showParen (not . List.null $ typeRepArgs rep) $ showsTypeRep rep
+      where
+        rep = typeRep i
 
 -- }}} AnId -------------------------------------------------------------------
 
