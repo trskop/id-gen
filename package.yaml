@@ -27,7 +27,6 @@ dependencies:
     # ^ Starting version 0.8.3 binary reuses Builder from bytestring package.
   - bytestring <1
   - largeword ==1.*
-  - data-default-extra >=0.1 && <1
 
 ghc-options:
   - -Wall

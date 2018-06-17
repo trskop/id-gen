@@ -25,7 +25,7 @@ module Data.Id.Type
     )
   where
 
-import Prelude (Bounded, Enum, fromIntegral, maxBound, succ)
+import Prelude (Bounded, Enum, fromIntegral, maxBound, minBound, succ)
 
 import Data.Bits (FiniteBits, finiteBitSize)
 import Data.Bool (not, otherwise)
@@ -59,7 +59,6 @@ import Text.Show
 import Data.Kind (type (*))
 #endif
 
-import Data.Default (Default(def))
 import Data.LargeWord (Word128)
 
 
@@ -239,8 +238,11 @@ instance
 
 -- {{{ IdOffset ---------------------------------------------------------------
 
-class (Bounded a, Default a, Eq a, Ord a, Typeable a) => IdOffset a where
+class (Bounded a, Eq a, Ord a, Typeable a) => IdOffset a where
     type IdOffsetNum a :: *
+
+    initialValue :: a
+    initialValue = minBound
 
     next :: a -> Maybe a
     default next
@@ -273,15 +275,6 @@ newtype IdOffset64 t = IdOffset64 Word64
 
 newtype IdOffset128 t = IdOffset128 Word128
   deriving (Bounded, Eq, Ord, Show, Typeable)
-
-instance Default (IdOffset32 t) where
-    def = IdOffset32 0
-
-instance Default (IdOffset64 t) where
-    def = IdOffset64 0
-
-instance Default (IdOffset128 t) where
-    def = IdOffset128 0
 
 instance
 #ifdef HAVE_TYPE_IN_TYPE
